@@ -7,17 +7,6 @@
 
     <property name="home" value="/var/log/app/" />
 
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <!--   해당 로깅의 패턴을 설정   -->
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <logger name="console" level="TRACE" >
-        <appender-ref ref="console" />
-    </logger>
-
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${home}file.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
