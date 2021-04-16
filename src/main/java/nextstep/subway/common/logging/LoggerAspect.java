@@ -28,7 +28,6 @@ public class LoggerAspect {
 		HttpServletRequest request =
 			((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-
 		LoggerTracer tracer = new LoggerTracer(
 			request.getMethod(),
 			request.getRequestURI(),
