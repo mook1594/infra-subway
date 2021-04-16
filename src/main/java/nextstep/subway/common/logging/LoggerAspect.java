@@ -1,18 +1,18 @@
-package nextstep.subway.logging;
-
-import java.util.Optional;
+package nextstep.subway.common.logging;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.util.Strings;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,21 +20,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Aspect
 public class LoggerAspect {
 
-	private static final Logger JSON_CONSOL_LOGGER = LoggerFactory.getLogger("JSON_CONSOL_LOGGER");
+	private static final Logger JSON_CONSOLE_LOGGER = LoggerFactory.getLogger("file");
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
-	@AfterReturning(value = "pointCut()", returning = "responseEntity")
+	@AfterReturning(pointcut = "execution(* nextstep.subway..*Controller.*(..))", returning = "responseEntity")
 	public void afterReturning(final JoinPoint joinPoint, final Object responseEntity) {
+		HttpServletRequest request =
+			((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+
 		LoggerTracer tracer = new LoggerTracer(
+			request.getMethod(),
+			request.getRequestURI(),
 			joinPoint.getArgs().length > 0 ? joinPoint.getArgs()[0] : null,
 			responseEntity
 		);
-		JSON_CONSOL_LOGGER.info(toJson(tracer));
+		JSON_CONSOLE_LOGGER.info(toJson(tracer));
 	}
-
-	// @Pointcut("within(nextstep.subway.*)")
-	@Pointcut("execution(* nextstep.subway..*.*())")
-	private void pointCut() { }
 
 	private String toJson(final Object obj) {
 		try {
